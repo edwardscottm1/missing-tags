@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Bad Tags</title>
+    <style>
+        main {
+            display: flex;
+        }
+
+        #table-container {
+            gap: 20px;
+            flex-grow: 1.5;
+            user-select: none;
+            /* flex-direction: column; */
+        }
+
+        #table-container>div {
+            /* flex-grow: 2; */
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            /* padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;  */
+            border-collapse: collapse;
+        }
+
+        #table-container> :nth-child(1) {
+            background-color: rgb(138, 138, 207);
+        }
+
+        #table-container> :nth-child(2) {
+            background-color: rgb(204, 207, 138);
+        }
+
+        #table-container> :nth-child(3) {
+            background-color: rgb(145, 207, 138);
+        }
+
+        #table-container> :nth-child(4) {
+            background-color: rgb(207, 138, 184);
+        }
+
+        #table-container> :nth-child(5) {
+            background-color: rgb(207, 138, 138);
+        }
+
+        td {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        tr td:first-child {
+            width: 90%;
+        }
+
+        tr td:nth-last-child(-n+2) {
+            text-align: right;
+            width: max-content;
+        }
+
+        .selected {
+            background-color: rgba(232, 231, 231, 0.507);
+            /* border: 10px gainsboro solid; */
+        }
+
+        .pendingRemoval {
+            background-color: crimson !important;
+        }
+
+        #actions {
+            background-color: rgb(140, 233, 240);
+            flex-grow: .5;
+        }
+
+        #actions h2 {
+            width: 100%;
+            text-align: center;
+        }
+
+        #buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button,
+        #buttons p {
+            width: 50%;
+            text-align: center;
+        }
+
+        #buttons p {
+            margin: 2px;
+        }
+
+        button:enabled, tr, caption {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Missing Files for Targeted Keywords</h2>
+    <p>For a variety of reasons often having to do with creative uses or site or keyword sculpting by others, the
+        following is a list of keywords that your site seems to be known for but for which you don't have any content.
+    </p>
+    <p>Review the list below and validate (/tags/word) or or unvalidate them - return a 410 gone result.</p>
+
+    <main>
+        <div id="table-container">
+            <div id="pending"></div>
+            <div id="not-tagged"></div>
+            <div id="tagged-tags"></div>
+            <div id="redirected-tags"></div>
+            <div id="bad-tags"></div>
+        </div>
+
+        <div id="actions">
+            <h2>Actions</h2>
+            <div id="buttons">
+                <p>Mark tags as untagged</p>
+                <button disabled data-action="not-tagged">Not Tagged</button>
+                <p>Mark tags as Tagged</p>
+                <button disabled data-action="tagged-tags">Tagged</button>
+                <p>Mark tags as Bad</p>
+                <button disabled data-action="bad-tags">Move to Bad Tags</button>
+                <p>Mark tags as Redirected - provide relevant category or link ID</p>
+                <input type="text" placeholder="C4 or L3">
+                <button disabled data-action="redirected-tags">Redirected</button>
+                <p>Remove tags - WARNING: Action cannot be undone</p>
+                <button disabled data-action="remove-tags">Delete</button>
+            </div>
+            <!-- <button>Move to Tagged</button> -->
+        </div>
+
+        <!-- Dialog for tag removal -->
+        <dialog id="dialogRemoval">
+            <h2>Selected tags will be removed in... <span style="color:red"></span></h2>
+            <div style="display:flex;gap:5px;justify-content:center;width:100%;">
+                <button id="cancelRemoval" autofocus style="width:30%;">Cancel</button>
+                <button id="dismissRemoval" style="width:30%;">Dismiss</button>
+            </div>
+        </dialog>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
