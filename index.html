@@ -2,156 +2,417 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <title>Bad Tags</title>
-    <style>
-        main {
-            display: flex;
-        }
+  <meta charset="utf-8" />
+  <title>Bad Tags</title>
+  <style>
+    main {
+      margin-top: 20px;
+      background-color: rgba(131, 131, 244, 0.234);
+      min-height: 300px;
+      border-radius: 5px;
+      padding-bottom: 10px;
+      width: 1000px;
+    }
 
-        #table-container {
-            gap: 20px;
-            flex-grow: 1.5;
-            user-select: none;
-            /* flex-direction: column; */
-        }
+    #tab-selectors>input[type="radio"] {
+      display: none;
+    }
 
-        #table-container>div {
-            /* flex-grow: 2; */
-            width: 100%;
-        }
 
-        table {
-            width: 100%;
-            /* padding-bottom: 10px;
-            padding-left: 10px;
-            padding-right: 10px;  */
-            border-collapse: collapse;
-        }
 
-        #table-container> :nth-child(1) {
-            background-color: rgb(138, 138, 207);
-        }
+    .tab-labels {
+      padding: 10px 5px;
+      background-color: rgb(195, 202, 197);
+      border-radius: 5px;
+      cursor: pointer;
+      color: #000;
+      transition: all .2s ease;
+    }
 
-        #table-container> :nth-child(2) {
-            background-color: rgb(204, 207, 138);
-        }
+    #tab-selectors>input[type="radio"]:checked+label {
+      background-color: rgb(146, 180, 217);
 
-        #table-container> :nth-child(3) {
-            background-color: rgb(145, 207, 138);
-        }
+    }
+    .tab-section {
+      display: none;
+      /* width: 70%; */
+      user-select: none;
+    }
 
-        #table-container> :nth-child(4) {
-            background-color: rgb(207, 138, 184);
-        }
+    body:has(#pending-tab:checked) #pending-section,
+    body:has(#tagged-tab:checked) #tagged-section,
+    body:has(#not-tagged-tab:checked) #not-tagged-section,
+    body:has(#not-allowed-tab:checked) #not-allowed-section,
+    body:has(#redirected-tab:checked) #redirected-section {
+      display: block !important;
+    }
 
-        #table-container> :nth-child(5) {
-            background-color: rgb(207, 138, 138);
-        }
+    .tab-section h2:first-child {
+      margin-top: 10px;
+    }
 
-        td {
-            padding-left: 5px;
-            padding-right: 5px;
-        }
+    h2,
+    h3 {
+      margin: 5px;
+    }
 
-        tr td:first-child {
-            width: 90%;
-        }
+    p {
+      margin: 0px;
+    }
 
-        tr td:nth-last-child(-n+2) {
-            text-align: right;
-            width: max-content;
-        }
+    .selected {
+      background-color: rgb(215, 215, 219) !important;
+      /* border: 10px gainsboro solid; */
+    }
 
-        .selected {
-            background-color: rgba(232, 231, 231, 0.507);
-            /* border: 10px gainsboro solid; */
-        }
+    .pendingRemoval {
+      background-color: crimson !important;
+    }
 
-        .pendingRemoval {
-            background-color: crimson !important;
-        }
 
-        #actions {
-            background-color: rgb(140, 233, 240);
-            flex-grow: .5;
-        }
+    .table-top-bar {
+      display: grid;
+      grid-template-columns: 35px 67px 1fr;
+      background-color: rgb(146, 180, 217);
+      padding-block: 5px;
+      border: 1px black solid;
 
-        #actions h2 {
-            width: 100%;
-            text-align: center;
-        }
+      position: sticky;
+      top: 0px;
+    }
 
-        #buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            justify-content: center;
-            align-items: center;
-        }
+    .table-top-bar span,
+    .table-top-bar label {
+      cursor: pointer;
+    }
 
-        button,
-        #buttons p {
-            width: 50%;
-            text-align: center;
-        }
+    .table-top-bar span:hover,
+    .table-top-bar label:hover,
+    .table-top-bar:has(input[type="checkbox"]:hover) label {
+      text-decoration: underline;
+    }
 
-        #buttons p {
-            margin: 2px;
-        }
+    p,
+    label {
+      margin-block: auto;
+    }
 
-        button:enabled, tr, caption {
-            cursor: pointer;
-        }
-    </style>
+    .tag-in-focus, .tag-in-focus-redirected {
+      display: grid;
+      grid-template-columns: 0fr 2.3fr .3fr;
+      padding: 1px;
+      height: 60px;
+      border: gray 1px solid;
+      background-color: white;
+    }
+    .tag-in-focus-redirected {
+      /* display: grid; */
+      grid-template-columns: 0fr 2.3fr 1fr .3fr !important;
+      /* padding: 1px;
+      height: 60px;
+      border: gray 1px solid;
+      background-color: white; */
+    }
+
+    .tag-in-focus:hover {
+      background-color: gainsboro;
+    }
+
+    .tag-in-focus>* {
+      display: inline-block;
+    }
+
+    .tag {
+      /* width: 90%; */
+      font-size: 25px;
+      padding-left: 5px;
+    }
+
+    .actions span {
+      cursor: pointer;
+    }
+
+    .actions span:hover {
+      text-decoration: underline;
+    }
+
+    .main-action {
+      color: blue
+    }
+
+    .redirect-action {
+      color: rgb(133, 133, 38)
+    }
+
+    .delete-action {
+      color: red
+    }
+
+    .actions {
+      grid-column: 2;
+      padding-left: 5px;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      aspect-ratio: 1;
+    }
+
+    .request-results {
+      padding-right: 4px;
+      text-align: right;
+      font-size: 25px;
+    }
+
+    .redirected-input {
+      margin-block: auto;
+      font-size: 14px;
+      height: 20px;
+    }
+
+    #buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .tag-in-focus input[type="checkbox"] {
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
 </head>
 
 <body>
 
-    <h2>Missing Files for Targeted Keywords</h2>
-    <p>For a variety of reasons often having to do with creative uses or site or keyword sculpting by others, the
-        following is a list of keywords that your site seems to be known for but for which you don't have any content.
-    </p>
-    <p>Review the list below and validate (/tags/word) or or unvalidate them - return a 410 gone result.</p>
+  <h2>Missing Files for Targeted Keywords</h2>
+  <p>For a variety of reasons often having to do with creative uses or site or keyword sculpting by others, the
+    following is a list of keywords that your site seems to be known for but for which you don't have any content.
+  </p>
+  <p>Review the list below and validate (/tags/word) or or unvalidate them - return a 410 gone result.</p>
+  <main>
+    <div id="tab-selectors">
+      <input checked type="radio" name="tabs" id="pending-tab">
+      <label class="tab-labels" for="pending-tab">Pending</label>
 
-    <main>
-        <div id="table-container">
-            <div id="pending"></div>
-            <div id="not-tagged"></div>
-            <div id="tagged-tags"></div>
-            <div id="redirected-tags"></div>
-            <div id="bad-tags"></div>
+      <input type="radio" name="tabs" id="tagged-tab">
+      <label class="tab-labels" for="tagged-tab">Tagged</label>
+
+      <input type="radio" name="tabs" id="not-tagged-tab">
+      <label class="tab-labels" for="not-tagged-tab">Not Tagged</label>
+
+      <input type="radio" name="tabs" id="not-allowed-tab">
+      <label class="tab-labels" for="not-allowed-tab">Not Allowed</label>
+
+      <input type="radio" name="tabs" id="redirected-tab">
+      <label class="tab-labels" for="redirected-tab">Redirected</label>
+    </div>
+    <div class="tab-section" id="pending-section">
+      <h2><span id="pending-count">20</span> tags</h2>
+      <h3>Selected - <span id="pending-selectedCount">0</span></h3>
+      <div class="bulk-actions">
+        <select>
+          <option value="" selected>Bulk Actions</option>
+          <option value="mark-tagged">Tagged</option>
+          <option value="mark-not-tagged">Not Tagged</option>
+          <option value="mark-not-allowed">Not Allowed</option>
+          <option value="mark-redirect">Redirect</option>
+          <option value="mark-delete">Delete</option>
+        </select>
+        <button data-section="pending-tags">Apply</button>
+      </div>
+
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <input type="checkbox" id="pending-select-all"><label for="pending-select-all">Select
+            All</label>
+          <p style="display:inline;">
+            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> | <span>Sort by
+              Results</span>
+          </p>
+        </div>
+        <div id="pending-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <input type="text" placeholder="Category or Link ID" class="redirected-input">
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-section" id="tagged-section">
+      <h2><span id="tagged-count">10</span> tags</h2>
+      <h3>Selected - <span id="tagged-selectedCount">0</span></h3>
+      <div class="bulk-actions">
+        <select>
+          <option value="" selected>Bulk Actions</option>
+          <option value="mark-tagged">Tagged</option>
+          <option value="mark-not-tagged">Not Tagged</option>
+          <option value="mark-not-allowed">Not Allowed</option>
+          <option value="mark-redirect">Redirect</option>
+          <option value="mark-delete">Delete</option>
+        </select>
+        <button data-section="tagged-tags">Apply</button>
+      </div>
+
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <input type="checkbox" id="tagged-select-all"><label for="tagged-select-all">Select
+            All</label>
+          <p style="display:inline;">
+            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> | <span>Sort by
+              Results</span>
+          </p>
+        </div>
+        <div id="tagged-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-section" id="not-tagged-section">
+      <h2><span id="not-tagged-count">0</span> tags</h2>
+      <h3>Selected - <span id="not-tagged-selectedCount">0</span></h3>
+      <div class="bulk-actions">
+        <select>
+          <option value="" selected>Bulk Actions</option>
+          <option value="mark-tagged">Tagged</option>
+          <option value="mark-not-tagged">Not Tagged</option>
+          <option value="mark-not-allowed">Not Allowed</option>
+          <option value="mark-redirect">Redirect</option>
+          <option value="mark-delete">Delete</option>
+        </select>
+        <button data-section="not-tagged-tags">Apply</button>
+      </div>
+
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <input type="checkbox" id="not-tagged-select-all"><label for="not-tagged-select-all">Select
+            All</label>
+          <p style="display:inline;">
+            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> | <span>Sort by
+              Results</span>
+          </p>
+        </div>
+        <div id="not-tagged-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="tab-section" id="not-allowed-section">
+      <h2><span id="not-allowed-count">20</span> tags</h2>
+      <h3>Selected - <span id="not-allowed-selectedCount">0</span></h2>
+        <div class="bulk-actions">
+          <select>
+            <option value="" selected>Bulk Actions</option>
+            <option value="mark-tagged">Tagged</option>
+            <option value="mark-not-tagged">Not Tagged</option>
+            <option value="mark-not-allowed">Not Allowed</option>
+            <option value="mark-redirect">Redirect</option>
+            <option value="mark-delete">Delete</option>
+          </select>
+          <button data-section="not-allowed-tags">Apply</button>
         </div>
 
-        <div id="actions">
-            <h2>Actions</h2>
-            <div id="buttons">
-                <p>Mark tags as untagged</p>
-                <button disabled data-action="not-tagged">Not Tagged</button>
-                <p>Mark tags as Tagged</p>
-                <button disabled data-action="tagged-tags">Tagged</button>
-                <p>Mark tags as Bad</p>
-                <button disabled data-action="bad-tags">Move to Bad Tags</button>
-                <p>Mark tags as Redirected - provide relevant category or link ID</p>
-                <input type="text" placeholder="C4 or L3">
-                <button disabled data-action="redirected-tags">Redirected</button>
-                <p>Remove tags - WARNING: Action cannot be undone</p>
-                <button disabled data-action="remove-tags">Delete</button>
-            </div>
-            <!-- <button>Move to Tagged</button> -->
+        <div class="table-tags">
+          <div class="table-top-bar">
+            <input type="checkbox" id="not-allowed-select-all"><label for="not-allowed-select-all">Select
+              All</label>
+            <p style="display:inline;">
+              | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> |
+              <span>Sort by Results</span>
+            </p>
+          </div>
+          <div id="not-allowed-tags">
+            <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+          </div>
+        </div>
+    </div>
+
+    <div class="tab-section" id="redirected-section">
+      <h2><span id="redirected-count">20</span> tags</h2>
+      <h3>Selected - <span id="redirected-selectedCount">0</span></h2>
+        <div class="bulk-actions">
+          <select>
+            <option value="" selected>Bulk Actions</option>
+            <option value="mark-tagged">Tagged</option>
+            <option value="mark-not-tagged">Not Tagged</option>
+            <option value="mark-not-allowed">Not Allowed</option>
+            <option value="mark-redirect">Redirect</option>
+            <option value="mark-delete">Delete</option>
+          </select>
+          <button data-section="redirected-tags">Apply</button>
         </div>
 
-        <!-- Dialog for tag removal -->
-        <dialog id="dialogRemoval">
-            <h2>Selected tags will be removed in... <span style="color:red"></span></h2>
-            <div style="display:flex;gap:5px;justify-content:center;width:100%;">
-                <button id="cancelRemoval" autofocus style="width:30%;">Cancel</button>
-                <button id="dismissRemoval" style="width:30%;">Dismiss</button>
-            </div>
-        </dialog>
-    </main>
+        <div class="table-tags">
+          <div class="table-top-bar">
+            <input type="checkbox" id="redirected-select-all"><label for="redirected-select-all">Select
+              All</label>
+            <p style="display:inline;">
+              | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> |
+              <span>Sort by Results</span>
+            </p>
+          </div>
+          <div id="redirected-tags">
+            <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+          </div>
+        </div>
+    </div>
+  </main>
 
-    <script src="main.js"></script>
+
+
+
+
+
+  <!-- Dialog for tag removal -->
+  <dialog id="dialog-remove">
+    <h2>Confirm Removal <span style="color:red"></span></h2>
+    <p></p>
+    <div style="display:flex;gap:5px;justify-content:center;width:100%;">
+      <button id="cancelRemoval" autofocus style="width:30%;">Cancel</button>
+      <button id="dismissRemoval" style="width:30%;">Confirm</button>
+    </div>
+  </dialog>
+
+  <dialog id="dialog-redirection">
+    <h2>Redirect - <span></span></h2>
+    <p>Ensure you understand the consequences of redirecting content</p>
+
+    <input type="text" autofocus placeholder="Category or Link ID" style="width: 80%;margin-block: 5px;">
+    <div style="display:flex;gap:5px;justify-content:center;width:100%;">
+      <button id="" style="width:30%;">Redirect</button>
+      <button id="" style="width:30%;">Cancel</button>
+    </div>
+  </dialog>
+  <script src="main.js"></script>
 </body>
 
 </html>
