@@ -556,7 +556,7 @@ function individualActionListener() {
                 const dialogBox = document.querySelector("#dialog-remove");
                 dialogBox.querySelector("p").innerHTML = tagText;
                 dialogBox.showModal();
-                
+
             }
         });
     });
@@ -569,10 +569,10 @@ function addRedirectDialogBoxActions() {
     const dialogBox = document.querySelector("#dialog-redirection");
     dialogBox.querySelector("button:first-of-type").addEventListener("click", (evnt) => {
         // let userInput = dialogBox.querySelector("input[type=\"text\"]").value;
-        
+
         const tags = document.querySelectorAll(".selected");
         tags.forEach(tag => {
-            
+
             // Ignore tags that are not present on the screen
             if (!tag.checkVisibility()) {
                 return
@@ -580,7 +580,7 @@ function addRedirectDialogBoxActions() {
             // const textbox = document.createElement("input");
             // textbox.setAttribute("type", "text");
             // let userInput = dialogBox.querySelector("input[type=\"text\"]").value;
-            
+
             const inputElement = document.createElement("input");
             inputElement.setAttribute("type", "text");
             inputElement.setAttribute("placeholder", "Category or Link ID");
@@ -589,7 +589,7 @@ function addRedirectDialogBoxActions() {
             console.log(tag);
             inputElement.value = dialogBox.querySelector("input[type=\"text\"]").value;
             tag.insertBefore(inputElement, tag.querySelector(".request-results"));
-            
+
             tag.classList.add("tag-in-focus-redirected");
             tag.classList.remove("tag-in-focus");
             tag.classList.remove("selected");
@@ -635,8 +635,10 @@ function addDeleteDialogBoxActions() {
             // const textbox = document.createElement("input");
             // textbox.setAttribute("type", "text");
             // let userInput = dialogBox.querySelector("input[type=\"text\"]").value;
-
+            const parent = tag.parentElement.parentElement.parentElement;
+            console.log(parent);
             tag.remove()
+            updateCountInSection(parent.id.slice(0, parent.id.indexOf("-section")));
         });
         dialogBox.close();
     });
@@ -653,7 +655,6 @@ function addDeleteDialogBoxActions() {
         tags.forEach(tag => {
             tag.classList.remove("selected");
             tag.querySelector("input[type=\"checkbox\"]").checked = false;
-
-        })
+        });
     })
 }
