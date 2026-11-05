@@ -254,7 +254,7 @@ makeTagsSelectable();
 
 // Event listener for tags, makes them be selectable
 function makeTagsSelectable() {
-    const tags = document.querySelectorAll(".tag-in-focus");
+    const tags = document.querySelectorAll(".tag-in-focus, .tag-in-focus-redirected");
 
     tags.forEach(tag => tag.addEventListener("click", (evnt) => {
         // console.log(evnt.target);
@@ -577,25 +577,31 @@ function addRedirectDialogBoxActions() {
             if (!tag.checkVisibility()) {
                 return
             }
-            // const textbox = document.createElement("input");
-            // textbox.setAttribute("type", "text");
-            // let userInput = dialogBox.querySelector("input[type=\"text\"]").value;
 
-            const inputElement = document.createElement("input");
-            inputElement.setAttribute("type", "text");
-            inputElement.setAttribute("placeholder", "Category or Link ID");
-            inputElement.setAttribute("disabled", "disabled");
-            inputElement.classList.add("redirected-input");
-            console.log(tag);
-            inputElement.value = dialogBox.querySelector("input[type=\"text\"]").value;
-            tag.insertBefore(inputElement, tag.querySelector(".request-results"));
+            if (tag.querySelector("input[type=\"text\"]")) {
+                console.log("has redirect");
+                const inputElement = tag.querySelector("input[type=\"text\"]");
+                inputElement.value = dialogBox.querySelector("input[type=\"text\"]").value;
+                tag.classList.remove("selected");
+                tag.querySelector("input[type=\"checkbox\"]").checked = false;
+            } else {
+                const inputElement = document.createElement("input");
+                inputElement.setAttribute("type", "text");
+                inputElement.setAttribute("placeholder", "Category or Link ID");
+                inputElement.setAttribute("disabled", "disabled");
+                inputElement.classList.add("redirected-input");
+                console.log(tag);
+                inputElement.value = dialogBox.querySelector("input[type=\"text\"]").value;
+                tag.insertBefore(inputElement, tag.querySelector(".request-results"));
 
-            tag.classList.add("tag-in-focus-redirected");
-            tag.classList.remove("tag-in-focus");
-            tag.classList.remove("selected");
-            tag.querySelector("input[type=\"checkbox\"]").checked = false;
+                tag.classList.add("tag-in-focus-redirected");
+                tag.classList.remove("tag-in-focus");
+                tag.classList.remove("selected");
+                tag.querySelector("input[type=\"checkbox\"]").checked = false;
 
-            document.querySelector("#redirected-tags").appendChild(tag);
+                document.querySelector("#redirected-tags").appendChild(tag);
+            }
+
         });
         dialogBox.close();
     });
