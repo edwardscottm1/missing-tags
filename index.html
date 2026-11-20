@@ -48,6 +48,39 @@
       display: block !important;
     }
 
+    /* 1. Default disabled state */
+    #bulk-actions-pending-apply,
+    #bulk-actions-tagged-apply,
+    #bulk-actions-not-tagged-apply,
+    #bulk-actions-not-allowed-apply,
+    #bulk-actions-redirected-apply {
+      pointer-events: none;
+      opacity: 0.5;
+      background-color: rgb(214, 147, 147);
+      transition: all .5s ease;
+    }
+
+    /* 2. Enabled state (overrides default when at least 1 box is checked AND an action is picked) */
+    #pending-section:has(.tag-in-focus input[type="checkbox"]:checked) #bulk-actions-pending:has(option:checked:not([value=""])) #bulk-actions-pending-apply,
+    #tagged-section:has(.tag-in-focus input[type="checkbox"]:checked) #bulk-actions-tagged:has(option:checked:not([value=""])) #bulk-actions-tagged-apply,
+    #not-tagged-section:has(.tag-in-focus input[type="checkbox"]:checked) #bulk-actions-not-tagged:has(option:checked:not([value=""])) #bulk-actions-not-tagged-apply,
+    #not-allowed-section:has(.tag-in-focus input[type="checkbox"]:checked) #bulk-actions-not-allowed:has(option:checked:not([value=""])) #bulk-actions-not-allowed-apply,
+    #redirected-section:has(.tag-in-focus-redirected input[type="checkbox"]:checked) #bulk-actions-redirected:has(option:checked:not([value=""])) #bulk-actions-redirected-apply {
+      pointer-events: auto;
+      /* background-color: initial; or your active button color */
+      opacity: 1;
+      cursor: pointer;
+      background-color: #fff;
+    }
+
+
+
+    /* #bulk-actions-pending:has(option:checked[value=""]) #bulk-actions-pending-apply {
+      pointer-events: none;
+      opacity: .5;
+      background-color: red;
+    } */
+
     .tab-section h2:first-child {
       margin-top: 10px;
     }
@@ -109,7 +142,7 @@
       cursor: pointer;
     }
 
-    .tag-in-focus:hover input[type="checkbox"]:not(:checked), 
+    .tag-in-focus:hover input[type="checkbox"]:not(:checked),
     .tag-in-focus-redirected:hover input[type="checkbox"]:not(:checked),
     .table-top-bar:has(label:hover) input[type="checkbox"]:not(:checked) {
       appearance: none;
@@ -125,7 +158,7 @@
     }
 
     .tag-in-focus:hover {
-      background-color: gainsboro;
+      background-color: rgb(193, 209, 239);
     }
 
     .tag-in-focus>* {
@@ -150,7 +183,7 @@
       color: blue
     }
 
-    .redirect-action {
+    .redirected-tags-action {
       color: rgb(133, 133, 38)
     }
 
@@ -192,6 +225,68 @@
       pointer-events: none;
       user-select: none;
     }
+
+    .redirect-pending {
+      background-image: repeating-linear-gradient(45deg,
+          #d3e399 0px,
+          #d3e399 10px,
+          #77757c40 10px,
+          #77757c40 20px);
+
+    }
+
+    .delete-pending {
+      background-image: repeating-linear-gradient(45deg,
+          #e39999 0px,
+          #e39999 10px,
+          #77757c40 10px,
+          #77757c40 20px);
+
+    }
+
+    .delete-pending,
+    .redirect-pending {
+      background-size: 200%;
+      background-position: right;
+      background-attachment: fixed;
+      animation: animateBg 30s linear infinite;
+    }
+
+    @keyframes animateBg {
+      100% {
+        background-position: left;
+      }
+    }
+
+
+    .bulk-actions {
+      margin-block: 5px;
+    }
+    .bulk-actions select, .bulk-actions button, dialog input, dialog button {
+      padding-block: 7px;
+      border-radius: 5px;
+    }
+
+    #dialog-remove button:first-of-type {
+      background-color: red;
+    } 
+    #dialog-redirection button:first-of-type {
+      background-color: rgb(133, 133, 38);
+    } 
+    
+    dialog {
+      border: #fff 1px solid;
+      border-radius: 5px;
+      width: 500px;
+    }
+
+    dialog p:first-of-type {
+      background: rgb(177, 213, 252);
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 5px;
+    }
+    /* dialog input {} */
   </style>
 </head>
 
@@ -220,18 +315,18 @@
       <label class="tab-labels" for="redirected-tab">Redirected</label>
     </div>
     <div class="tab-section" id="pending-section">
-      <h2><span id="pending-count">20</span> tags</h2>
+      <h2><span id="pending-tags-count">20</span> tags</h2>
       <h3>Selected - <span id="pending-selectedCount">0</span></h3>
-      <div class="bulk-actions">
+      <div class="bulk-actions" id="bulk-actions-pending">
         <select>
           <option value="" selected>Bulk Actions</option>
-          <option value="mark-tagged">Tagged</option>
-          <option value="mark-not-tagged">Not Tagged</option>
-          <option value="mark-not-allowed">Not Allowed</option>
-          <option value="mark-redirect">Redirect</option>
-          <option value="mark-delete">Delete</option>
+          <option value="tagged-tags">Tagged</option>
+          <option value="not-tagged-tags">Not Tagged</option>
+          <option value="not-allowed-tags">Not Allowed</option>
+          <option value="redirected-tags">Redirect</option>
+          <option value="delete">Delete</option>
         </select>
-        <button data-section="pending-tags">Apply</button>
+        <button class="bulk-actions-button" data-section="pending-tags" id="bulk-actions-pending-apply">Apply</button>
       </div>
 
       <div class="table-tags">
@@ -256,18 +351,18 @@
     </div>
 
     <div class="tab-section" id="tagged-section">
-      <h2><span id="tagged-count">10</span> tags</h2>
+      <h2><span id="tagged-tags-count">10</span> tags</h2>
       <h3>Selected - <span id="tagged-selectedCount">0</span></h3>
-      <div class="bulk-actions">
+      <div class="bulk-actions" id="bulk-actions-tagged">
         <select>
           <option value="" selected>Bulk Actions</option>
-          <option value="mark-tagged">Tagged</option>
-          <option value="mark-not-tagged">Not Tagged</option>
-          <option value="mark-not-allowed">Not Allowed</option>
-          <option value="mark-redirect">Redirect</option>
-          <option value="mark-delete">Delete</option>
+          <option value="tagged-tags">Tagged</option>
+          <option value="not-tagged-tags">Not Tagged</option>
+          <option value="not-allowed-tags">Not Allowed</option>
+          <option value="redirected-tags">Redirect</option>
+          <option value="delete">Delete</option>
         </select>
-        <button data-section="tagged-tags">Apply</button>
+        <button class="bulk-actions-button" id="bulk-actions-tagged-apply" data-section="tagged-tags">Apply</button>
       </div>
 
       <div class="table-tags">
@@ -291,18 +386,19 @@
     </div>
 
     <div class="tab-section" id="not-tagged-section">
-      <h2><span id="not-tagged-count">0</span> tags</h2>
+      <h2><span id="not-tagged-tags-count">0</span> tags</h2>
       <h3>Selected - <span id="not-tagged-selectedCount">0</span></h3>
-      <div class="bulk-actions">
+      <div class="bulk-actions" id="bulk-actions-not-tagged">
         <select>
           <option value="" selected>Bulk Actions</option>
-          <option value="mark-tagged">Tagged</option>
-          <option value="mark-not-tagged">Not Tagged</option>
-          <option value="mark-not-allowed">Not Allowed</option>
-          <option value="mark-redirect">Redirect</option>
-          <option value="mark-delete">Delete</option>
+          <option value="tagged-tags">Tagged</option>
+          <option value="not-tagged-tags">Not Tagged</option>
+          <option value="not-allowed-tags">Not Allowed</option>
+          <option value="redirected-tags">Redirect</option>
+          <option value="delete">Delete</option>
         </select>
-        <button data-section="not-tagged-tags">Apply</button>
+        <button class="bulk-actions-button" id="bulk-actions-not-tagged-apply"
+          data-section="not-tagged-tags">Apply</button>
       </div>
 
       <div class="table-tags">
@@ -327,18 +423,19 @@
     </div>
 
     <div class="tab-section" id="not-allowed-section">
-      <h2><span id="not-allowed-count">20</span> tags</h2>
+      <h2><span id="not-allowed-tags-count">20</span> tags</h2>
       <h3>Selected - <span id="not-allowed-selectedCount">0</span></h2>
-        <div class="bulk-actions">
+        <div class="bulk-actions" id="bulk-actions-not-allowed">
           <select>
             <option value="" selected>Bulk Actions</option>
-            <option value="mark-tagged">Tagged</option>
-            <option value="mark-not-tagged">Not Tagged</option>
-            <option value="mark-not-allowed">Not Allowed</option>
-            <option value="mark-redirect">Redirect</option>
-            <option value="mark-delete">Delete</option>
+            <option value="tagged-tags">Tagged</option>
+            <option value="not-tagged-tags">Not Tagged</option>
+            <option value="not-allowed-tags">Not Allowed</option>
+            <option value="redirected-tags">Redirect</option>
+            <option value="delete">Delete</option>
           </select>
-          <button data-section="not-allowed-tags">Apply</button>
+          <button class="bulk-actions-button" id="bulk-actions-not-allowed-apply"
+            data-section="not-allowed-tags">Apply</button>
         </div>
 
         <div class="table-tags">
@@ -362,66 +459,100 @@
     </div>
 
     <div class="tab-section" id="redirected-section">
-      <h2><span id="redirected-count">20</span> tags</h2>
-      <h3>Selected - <span id="redirected-selectedCount">0</span></h2>
-        <div class="bulk-actions">
-          <select>
-            <option value="" selected>Bulk Actions</option>
-            <option value="mark-tagged">Tagged</option>
-            <option value="mark-not-tagged">Not Tagged</option>
-            <option value="mark-not-allowed">Not Allowed</option>
-            <option value="mark-redirect">Redirect</option>
-            <option value="mark-delete">Delete</option>
-          </select>
-          <button data-section="redirected-tags">Apply</button>
-        </div>
+      <h2><span id="redirected-tags-count">20</span> tags</h2>
+      <h3>Selected - <span id="redirected-selectedCount">0</span></h3>
+      <div class="bulk-actions" id="bulk-actions-redirected">
+        <select>
+          <option value="" selected>Bulk Actions</option>
+          <option value="tagged-tags">Tagged</option>
+          <option value="not-tagged-tags">Not Tagged</option>
+          <option value="not-allowed-tags">Not Allowed</option>
+          <option value="redirected-tags">Redirect</option>
+          <option value="delete">Delete</option>
+        </select>
+        <button class="bulk-actions-button" data-section="redirected-tags"
+          id="bulk-actions-redirected-apply">Apply</button>
+      </div>
 
-        <div class="table-tags">
-          <div class="table-top-bar">
-            <input type="checkbox" id="redirected-select-all"><label for="redirected-select-all">Select
-              All</label>
-            <p style="display:inline;">
-              | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> |
-              <span>Sort by Results</span>
-            </p>
-          </div>
-          <div id="redirected-tags">
-            <!-- <div class="tag-in-focus">
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <input type="checkbox" id="redirected-select-all"><label for="redirected-select-all">Select
+            All</label>
+          <p style="display:inline;">
+            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> |
+            <span>Sort by Results</span>
+          </p>
+        </div>
+        <div id="redirected-tags">
+          <!-- <div class="tag-in-focus">
                             <input type="checkbox">
                             <p class="tag">Word</p>
                             <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
                             <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
                         </div> -->
-          </div>
         </div>
+      </div>
     </div>
   </main>
+  <!-- 
+  <div id="status" >
+    <p><span id="status-count">If you see this something is broken</span> keywords moved to "<span id="status-destination"></span>"</p>
+  </div> -->
+  <style>
+    .status {
+      position: fixed;
+      width: 200px;
+      height: 60px;
+      bottom: 20px;
+      right: 20px;
+      background-color: white;
 
+      border: black 1px solid;
+      border-radius: 5px;
 
+      display: flex;
+      align-items: center;
+      text-align: center;
+      transform: translate(200%);
+      transition: transform .5s ease;
+    }
+
+    .status.moved {
+      transform: translate(0%);
+    }
+
+    .status p {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
 
 
 
 
   <!-- Dialog for tag removal -->
   <dialog id="dialog-remove">
-    <h2>Confirm Removal <span style="color:red"></span></h2>
-    <p></p>
+    <h2>Confirm Deletion </h2>
+    <p style="color:red" id="delete-dialog-tags"></p>
     <div style="display:flex;gap:5px;justify-content:center;width:100%;">
-      <button id="" autofocus style="width:30%;">Confirm</button>
+      <button id="" autofocus style="width:30%;">Delete</button>
       <button id="" style="width:30%;">Cancel</button>
     </div>
   </dialog>
 
   <dialog id="dialog-redirection">
-    <h2>Redirect - <span></span></h2>
+    <h2>Confirm Redirection</h2>
+    <p id="redirect-dialog-tags"></p>
     <p>Ensure you understand the consequences of redirecting content</p>
 
-    <input type="text" autofocus placeholder="Category or Link ID" style="width: 80%;margin-block: 5px;">
+    <input type="text" autofocus placeholder="Category or Link ID" style="width: 100%;margin-block: 5px;">
     <div style="display:flex;gap:5px;justify-content:center;width:100%;">
       <button id="" style="width:30%;">Redirect</button>
       <button id="" style="width:30%;">Cancel</button>
     </div>
   </dialog>
+  <script src="data.js"></script>
   <script src="main.js"></script>
 </body>
 
