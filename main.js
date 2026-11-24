@@ -465,7 +465,6 @@ function addRedirectDialogBoxActions() {
                 // tag.classList.remove("selected");
                 // tag.querySelector("input[type=\"checkbox\"]").checked = false;
             }
-
         })
     })
 }
