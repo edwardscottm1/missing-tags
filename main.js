@@ -1,7 +1,6 @@
 "use strict";
 /*
 TODO ------------------------
-    Make so rediection only happens when user populate text box nad have box clear after submit
     Fix naming conventions
     Possibly do pages for tags? Not sure (do if i need more time)
     REdo sorting functions, they should be one or more stand alone in a way like the actions
@@ -106,7 +105,6 @@ function makeTagsSelectable() {
 }
 
 selectAllEvent(document.querySelectorAll(".table-top-bar input[type=\"checkbox\"]"));
-
 // Function used to make select all button select all
 function selectAllEvent(checkboxes) {
     checkboxes.forEach(checkbox => {
@@ -158,138 +156,121 @@ function updatedSelectedCount(table) {
 function updateCountInSection(table) {
     document.querySelector(`#${table}-count`).innerHTML = document.querySelector(`#${table}`).children.length;
 }
-
+// Add event listeners to the sort by results tag
+document.querySelectorAll(".table-top-bar span:nth-child(3)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsByResults(evnt.target.parentElement.parentElement.parentElement.parentElement.id); }));
 // Function used to sort tags by results
-sortTagsByResultsEvent();
-function sortTagsByResultsEvent() {
-    // Get all tags used to sort by results
-    const sortByCountActionElements = document.querySelectorAll(".table-top-bar span:nth-child(3)");
+function sortTagsByResults(tableID) {
+    const table = document.querySelector(`#${tableID}`);
+    const sortingActionButton = table.querySelector(".table-top-bar span:nth-child(3)")
 
-    sortByCountActionElements.forEach(element => {
-        element.addEventListener("click", (evnt) => {
-            console.log("Sort by Results");
-            // Get associated tags and convert HTML object to Array to be sortable
-            const tags = Array.from(element.parentElement.parentElement.parentElement.querySelectorAll(".tag-in-focus"));
-            // Remove ^ or V from other options
-            removeArrowFromOtherSortingAction();
+    // Get associated tags and convert HTML object to Array to be sortable
+    const tags = Array.from(table.querySelectorAll(".tag-in-focus"));
+    // Remove ^ or V from other options
+    removeArrowFromOtherSortingAction();
 
-
-            // SOrt descending
-            if (evnt.target.dataset.sortedResAscending == "true") {
-                tags.sort((a, b) => {
-                    const valueA = parseFloat(a.dataset.resultsCount);
-                    const valueB = parseFloat(b.dataset.resultsCount);
-                    // console.log(valueA, valueB);
-                    return valueB - valueA;
-                })
-
-                evnt.target.dataset.sortedResAscending = false;
-                evnt.target.innerHTML = "V Sort by Results";
-                // Sort ascending 
-            } else {
-                tags.sort((a, b) => {
-                    const valueA = parseFloat(a.dataset.resultsCount);
-                    const valueB = parseFloat(b.dataset.resultsCount);
-                    // console.log(valueA, valueB);
-                    return valueA - valueB;
-                })
-
-                evnt.target.innerHTML = "^ Sort by Results";;
-                evnt.target.dataset.sortedResAscending = true;
-            }
-            // Append tags back to their parent to sort them
-            tags.forEach(tag => tag.parentElement.appendChild(tag));
+    // SOrt descending
+    if (sortingActionButton.dataset.sortedResAscending == "true") {
+        tags.sort((a, b) => {
+            const valueA = parseFloat(a.dataset.resultsCount);
+            const valueB = parseFloat(b.dataset.resultsCount);
+            return valueB - valueA;
         })
-    });
-
+        sortingActionButton.dataset.sortedResAscending = false;
+        sortingActionButton.innerHTML = "V Sort by Results";
+        // Sort ascending 
+    } else {
+        tags.sort((a, b) => {
+            const valueA = parseFloat(a.dataset.resultsCount);
+            const valueB = parseFloat(b.dataset.resultsCount);
+            // console.log(valueA, valueB);
+            return valueA - valueB;
+        })
+        sortingActionButton.innerHTML = "^ Sort by Results";
+        sortingActionButton.dataset.sortedResAscending = true;
+    }
+    // Append tags back to their parent to sort them
+    tags.forEach(tag => tag.parentElement.appendChild(tag));
 }
 
-sortTagsByRequestEvent();
+
+// Add event listeners to the sort by requests tag
+document.querySelectorAll(".table-top-bar span:nth-child(2)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsByRequest(evnt.target.parentElement.parentElement.parentElement.parentElement.id) }));
 // Function used to sort tags by requested option
-function sortTagsByRequestEvent() {
+function sortTagsByRequest(tableID) {
     // Select all button associated with sort by requested
-    const sortByCountActionElements = document.querySelectorAll(".table-top-bar span:nth-child(2)");
-
-    sortByCountActionElements.forEach(element => {
-        element.addEventListener("click", (evnt) => {
-            console.log("Sort by Request");
-
-            // Get all the tags in the same div as the action button and convert into an array to be sortable
-            const tags = Array.from(element.parentElement.parentElement.parentElement.querySelectorAll(".tag-in-focus"));
-            // Remove ^ or V from other options
-            removeArrowFromOtherSortingAction();
-
-
-            // SOrt descending
-            if (evnt.target.dataset.sortedReqAscending == "true") {
-                tags.sort((a, b) => {
-                    const valueA = parseFloat(a.dataset.requestCount);
-                    const valueB = parseFloat(b.dataset.requestCount);
-                    // console.log(valueA, valueB);
-                    return valueB - valueA;
-                })
-
-                evnt.target.dataset.sortedReqAscending = false;
-                evnt.target.innerHTML = "V Sort by Requested";
-                // Sort ascending 
-            } else {
-                tags.sort((a, b) => {
-                    const valueA = parseFloat(a.dataset.requestCount);
-                    const valueB = parseFloat(b.dataset.requestCount);
-                    // console.log(valueA, valueB);
-                    return valueA - valueB;
-                })
-
-                evnt.target.innerHTML = "^ Sort by Requested";;
-                evnt.target.dataset.sortedReqAscending = true;
-            }
-
-            // Append back each element to the parent
-            tags.forEach(tag => tag.parentElement.appendChild(tag));
+    const table = document.querySelector(`#${tableID}`);
+    const sortingActionButton = table.querySelector(".table-top-bar span:nth-child(2)")
+    // Get all the tags in the same div as the action button and convert into an array to be sortable
+    const tags = Array.from(table.querySelectorAll(".tag-in-focus"));
+    // Remove ^ or V from other options
+    removeArrowFromOtherSortingAction();
+    // SOrt descending
+    if (sortingActionButton.dataset.sortedReqAscending == "true") {
+        tags.sort((a, b) => {
+            const valueA = parseFloat(a.dataset.requestCount);
+            const valueB = parseFloat(b.dataset.requestCount);
+            // console.log(valueA, valueB);
+            return valueB - valueA;
         })
-    });
-
+        sortingActionButton.dataset.sortedReqAscending = false;
+        sortingActionButton.innerHTML = "V Sort by Requested";
+        // Sort ascending 
+    } else {
+        tags.sort((a, b) => {
+            const valueA = parseFloat(a.dataset.requestCount);
+            const valueB = parseFloat(b.dataset.requestCount);
+            // console.log(valueA, valueB);
+            return valueA - valueB;
+        })
+        sortingActionButton.innerHTML = "^ Sort by Requested";
+        sortingActionButton.dataset.sortedReqAscending = true;
+    }
+    // Append back each element to the parent
+    tags.forEach(tag => tag.parentElement.appendChild(tag));
 }
+// Add event listener to sort tags alphabetically
+document.querySelectorAll(".table-top-bar span:nth-child(1)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsAlphabetically(evnt.target.parentElement.parentElement.parentElement.parentElement.id) }));
 // Function used to sort tags by alphabetically option
-sortTagsByAlphabeticallyEvent();
-function sortTagsByAlphabeticallyEvent() {
-    // Get all buttons that do the alphabetical sort
-    const sortByCountActionElements = document.querySelectorAll(".table-top-bar span:nth-child(1)");
+function sortTagsAlphabetically(tableID, movingTag=false) {
+    // Select table and the button used to sort
+    const table = document.querySelector(`#${tableID}`);
+    const sortingActionButton = table.querySelector(".table-top-bar span:nth-child(1)")
+    console.log("Sort by Alphabetical");
 
-    sortByCountActionElements.forEach(element => {
-        element.addEventListener("click", (evnt) => {
-            console.log("Sort by Alphabetical");
+    // Get associated tags and convert to array
+    const tags = Array.from(table.querySelectorAll(".tag-in-focus, .tag-in-focus-redirected"));
+    // Remove ^ or V from other options
+    removeArrowFromOtherSortingAction();
 
-            // Get associated tags and convert to array
-            const tags = Array.from(element.parentElement.parentElement.parentElement.querySelectorAll(".tag-in-focus"));
-            // Remove ^ or V from other options
-            removeArrowFromOtherSortingAction();
-            // SOrt descending
-            if (evnt.target.dataset.sortedAlphaAscending == "true") {
-                tags.sort((a, b) => {
-                    const valueA = a.querySelector(".tag").innerHTML;
-                    const valueB = b.querySelector(".tag").innerHTML;
-                    return valueA.localeCompare(valueB);;
-                })
-
-                evnt.target.dataset.sortedAlphaAscending = false;
-                evnt.target.innerHTML = "V Sort Alphabetically";
-                // Sort ascending 
-            } else {
-                tags.sort((a, b) => {
-                    const valueA = a.querySelector(".tag").innerHTML;
-                    const valueB = b.querySelector(".tag").innerHTML;
-                    return valueB.localeCompare(valueA);;
-                })
-
-                evnt.target.innerHTML = "^ Sort Alphabetically";;
-                evnt.target.dataset.sortedAlphaAscending = true;
-            }
-            // Append back each tag to their parent to reorganize
-            tags.forEach(tag => tag.parentElement.appendChild(tag));
+    // If this is called when we move the tags, just sort them alphabetically and nothing else
+    if (movingTag) {
+        tags.sort((a, b) => {
+            const valueA = a.querySelector(".tag").innerHTML;
+            const valueB = b.querySelector(".tag").innerHTML;
+            // console.log(test);
+            return valueA.localeCompare(valueB);
         })
-    });
-
+    // SOrt descending
+    } else if (sortingActionButton.dataset.sortedAlphaAscending == "true") {
+        tags.sort((a, b) => {
+            const valueA = a.querySelector(".tag").innerHTML;
+            const valueB = b.querySelector(".tag").innerHTML;
+            return valueA.localeCompare(valueB);
+        })
+        sortingActionButton.dataset.sortedAlphaAscending = false;
+        sortingActionButton.innerHTML = "V Sort Alphabetically";
+        // Sort ascending 
+    } else {
+        tags.sort((a, b) => {
+            const valueA = a.querySelector(".tag").innerHTML;
+            const valueB = b.querySelector(".tag").innerHTML;
+            return valueB.localeCompare(valueA);
+        })
+        sortingActionButton.innerHTML = "^ Sort Alphabetically";
+        sortingActionButton.dataset.sortedAlphaAscending = true;
+    }
+    // Append back each tag to their parent to reorganize
+    tags.forEach(tag => tag.parentElement.appendChild(tag));
 }
 
 // Function used to remove little arrow on other sorting actions when other action selected
@@ -307,8 +288,6 @@ function removeArrowFromOtherSortingAction() {
         }
     });
 }
-
-
 
 // Function that adds functionality to individual action buttons
 // It creates an object of data used by the performAction function in order to organize the tags
@@ -347,7 +326,6 @@ function bulkActionFunctionality() {
     });
 }
 
-
 // Function that organizes the tag after user selects an action
 function performAction(data) {
     // If action  is to tag, not tag or not allowed the tag, simply move the tag and change some styles and counts
@@ -382,8 +360,8 @@ function performAction(data) {
             updateCountInSection(data.currentParent);
             // ALso update the selected count, if the tag was selected
             updatedSelectedCount(data.currentParent);
+            sortTagsAlphabetically(data.destination.replace("tags", "section"), true);
         });
-        // console.log(data.destination.replace("-tags", "").replaceAll("-", " ").toUpperCase())
         showStatusThenHide(data.tags.length, data.destination.replace("-tags", "").replaceAll("-", " ").toUpperCase());
     } else if (data.destination == "redirected-tags") {
         const dialogBox = document.querySelector("#dialog-redirection");
@@ -398,7 +376,6 @@ function performAction(data) {
         });
         dialogBox.querySelector("#redirect-dialog-tags").innerHTML = message;
         dialogBox.showModal();
-        // console.log(message);
     } else if (data.destination == "delete") {
         const dialogBox = document.querySelector("#dialog-remove");
         let message = "";
@@ -431,6 +408,7 @@ function addRedirectDialogBoxActions() {
                 // console.log("has redirect");
                 const inputElement = tag.querySelector("input[type=\"text\"]");
                 inputElement.value = dialogBox.querySelector("input[type=\"text\"]").value;
+
                 // Deselect if selected
                 tag.querySelector("input[type=\"checkbox\"]").checked = false;
                 tag.classList.remove("selected");
@@ -465,11 +443,14 @@ function addRedirectDialogBoxActions() {
                 updateCountInSection("redirected-tags");
 
             }
+            // Remove text user inputs from the textbox
+            dialogBox.querySelector("input[type=\"text\"]").value = "";
             // Remove the pending class
             tag.classList.remove("redirect-pending");
+            // Inform user of move
             showStatusThenHide(tags.length, "Redirected");
         });
-
+        sortTagsAlphabetically("redirected-section", true);
         dialogBox.close();
     });
     // Add close functionality and deselect tags (remove the pending class)
@@ -518,30 +499,22 @@ function addDeleteDialogBoxActions() {
         let tags = document.querySelectorAll(".delete-pending");
         tags.forEach(tag => {
             tag.classList.remove("delete-pending");
-            // tag.querySelector("input[type=\"checkbox\"]").checked = false;
         });
     });
 }
 
-
 // Function used to show a snackbar to inform user of tags being moved
 function showStatusThenHide(count, destination) {
-    // const snackbar = document.querySelector("#status");
     const snackbar = document.createElement("div");
     snackbar.classList.add("status");
     if (destination == "Delete") {
         snackbar.innerHTML = `<p><b>${count}</b> keyword${count > 1 ? 's' : ''} <b>DELETED</b></p>`;
-
     } else {
         snackbar.innerHTML = `<p><b>${count}</b> keyword${count > 1 ? 's' : ''} moved to <b>${destination}</b></p>`;
     }
     document.body.appendChild(snackbar);
     snackbar.offsetHeight;
-    // snackbar.querySelector("#status-count").innerHTML = count;
-    // snackbar.querySelector("#status-destination").innerHTML = destination;
-
     snackbar.classList.add("moved");
-
     setTimeout(() => {
         snackbar.classList.remove("moved")
     }, 3000)
