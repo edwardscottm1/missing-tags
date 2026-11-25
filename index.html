@@ -10,7 +10,7 @@
       background-color: rgba(131, 131, 244, 0.234);
       min-height: 300px;
       border-radius: 5px;
-      padding-bottom: 10px;
+      padding: 10px;
       width: 1000px;
     }
 
@@ -34,6 +34,7 @@
     .tab-section {
       display: none;
       user-select: none;
+      margin-top: 15px;
     }
 
     body:has(#pending-tab:checked) #pending-section,
@@ -63,7 +64,6 @@
     #not-allowed-section:has(.tag-in-focus input[type="checkbox"]:checked) #bulk-actions-not-allowed:has(option:checked:not([value=""])) #bulk-actions-not-allowed-apply,
     #redirected-section:has(.tag-in-focus-redirected input[type="checkbox"]:checked) #bulk-actions-redirected:has(option:checked:not([value=""])) #bulk-actions-redirected-apply {
       pointer-events: auto;
-      /* background-color: initial; or your active button color */
       opacity: 1;
       cursor: pointer;
       background-color: #fff;
@@ -84,23 +84,32 @@
 
     .selected {
       background-color: rgb(215, 215, 219) !important;
-      /* border: 10px gainsboro solid; */
     }
 
     .pendingRemoval {
       background-color: crimson !important;
     }
 
-
     .table-top-bar {
+      position: sticky;
+      top: 0px;
+      background-color: rgb(146, 180, 217);
+      border: #000 1px solid;
+    }
+
+    .table-top-bar div:first-child {
+      padding-block: 5px;
+    }
+
+    .table-top-bar div h2 {
+      display: inline;
+    }
+
+    .top-bar-actions {
       display: grid;
       grid-template-columns: 35px 67px 1fr;
       background-color: rgb(146, 180, 217);
       padding-block: 5px;
-      border: 1px black solid;
-
-      position: sticky;
-      top: 0px;
     }
 
     .table-top-bar span,
@@ -154,7 +163,6 @@
     }
 
     .tag {
-      /* width: 90%; */
       font-size: 25px;
       padding-left: 5px;
     }
@@ -249,8 +257,13 @@
 
     .bulk-actions {
       margin-block: 5px;
+      margin-left: 4px;
     }
-    .bulk-actions select, .bulk-actions button, dialog input, dialog button {
+
+    .bulk-actions select,
+    .bulk-actions button,
+    dialog input,
+    dialog button {
       padding-block: 7px;
       border-radius: 5px;
       cursor: pointer;
@@ -259,15 +272,18 @@
     #dialog-remove button:first-of-type {
       background-color: red;
       transition: all .2s ease;
-    } 
+    }
+
     #dialog-redirection button:first-of-type {
-      background-color: rgb(133, 133, 38);
+      background-color: rgb(215, 215, 41);
       transition: all .2s ease;
-    } 
-    #dialog-remove button:first-of-type:hover, #dialog-redirection button:first-of-type:hover {
+    }
+
+    #dialog-remove button:first-of-type:hover,
+    #dialog-redirection button:first-of-type:hover {
       background-color: darkgray;
     }
-    
+
     dialog {
       border: #fff 1px solid;
       border-radius: 5px;
@@ -281,226 +297,13 @@
       margin-bottom: 5px;
     }
 
-    
+
     #dialog-redirection:has(#dialog-redirect-input:placeholder-shown) #dialog-redirect-confirm {
       opacity: .5;
       pointer-events: none;
       opacity: .5;
     }
 
-    /* dialog input {} */
-  </style>
-</head>
-
-<body>
-
-  <h2>Missing Files for Targeted Keywords</h2>
-  <p>For a variety of reasons often having to do with creative uses or site or keyword sculpting by others, the
-    following is a list of keywords that your site seems to be known for but for which you don't have any content.
-  </p>
-  <p>Review the list below and validate (/tags/word) or or unvalidate them - return a 410 gone result.</p>
-  <main>
-    <div id="tab-selectors">
-      <input checked type="radio" name="tabs" id="pending-tab">
-      <label class="tab-labels" for="pending-tab">Pending</label>
-
-      <input type="radio" name="tabs" id="tagged-tab">
-      <label class="tab-labels" for="tagged-tab">Tagged</label>
-
-      <input type="radio" name="tabs" id="not-tagged-tab">
-      <label class="tab-labels" for="not-tagged-tab">Not Tagged</label>
-
-      <input type="radio" name="tabs" id="not-allowed-tab">
-      <label class="tab-labels" for="not-allowed-tab">Not Allowed</label>
-
-      <input type="radio" name="tabs" id="redirected-tab">
-      <label class="tab-labels" for="redirected-tab">Redirected</label>
-    </div>
-    <div class="tab-section" id="pending-section">
-      <h2><span id="pending-tags-count">20</span> tags</h2>
-      <h3>Selected - <span id="pending-selectedCount">0</span></h3>
-      <div class="bulk-actions" id="bulk-actions-pending">
-        <select>
-          <option value="" selected>Bulk Actions</option>
-          <option value="tagged-tags">Tagged</option>
-          <option value="not-tagged-tags">Not Tagged</option>
-          <option value="not-allowed-tags">Not Allowed</option>
-          <option value="redirected-tags">Redirect</option>
-          <option value="delete">Delete</option>
-        </select>
-        <button class="bulk-actions-button" data-section="pending-tags" id="bulk-actions-pending-apply">Apply</button>
-      </div>
-
-      <div class="table-tags">
-        <div class="table-top-bar">
-          <input type="checkbox" id="pending-select-all"><label for="pending-select-all">Select
-            All</label>
-          <p style="display:inline;">
-            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> | <span>Sort by
-              Results</span>
-          </p>
-        </div>
-        <div id="pending-tags">
-          <!-- <div class="tag-in-focus">
-                            <input type="checkbox">
-                            <p class="tag">Word</p>
-                            <input type="text" placeholder="Category or Link ID" class="redirected-input">
-                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
-                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
-                        </div> -->
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-section" id="tagged-section">
-      <h2><span id="tagged-tags-count">10</span> tags</h2>
-      <h3>Selected - <span id="tagged-selectedCount">0</span></h3>
-      <div class="bulk-actions" id="bulk-actions-tagged">
-        <select>
-          <option value="" selected>Bulk Actions</option>
-          <option value="tagged-tags">Tagged</option>
-          <option value="not-tagged-tags">Not Tagged</option>
-          <option value="not-allowed-tags">Not Allowed</option>
-          <option value="redirected-tags">Redirect</option>
-          <option value="delete">Delete</option>
-        </select>
-        <button class="bulk-actions-button" id="bulk-actions-tagged-apply" data-section="tagged-tags">Apply</button>
-      </div>
-
-      <div class="table-tags">
-        <div class="table-top-bar">
-          <input type="checkbox" id="tagged-select-all"><label for="tagged-select-all">Select
-            All</label>
-          <p style="display:inline;">
-            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> | <span>Sort by
-              Results</span>
-          </p>
-        </div>
-        <div id="tagged-tags">
-          <!-- <div class="tag-in-focus">
-                            <input type="checkbox">
-                            <p class="tag">Word</p>
-                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
-                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
-                        </div> -->
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-section" id="not-tagged-section">
-      <h2><span id="not-tagged-tags-count">0</span> tags</h2>
-      <h3>Selected - <span id="not-tagged-selectedCount">0</span></h3>
-      <div class="bulk-actions" id="bulk-actions-not-tagged">
-        <select>
-          <option value="" selected>Bulk Actions</option>
-          <option value="tagged-tags">Tagged</option>
-          <option value="not-tagged-tags">Not Tagged</option>
-          <option value="not-allowed-tags">Not Allowed</option>
-          <option value="redirected-tags">Redirect</option>
-          <option value="delete">Delete</option>
-        </select>
-        <button class="bulk-actions-button" id="bulk-actions-not-tagged-apply"
-          data-section="not-tagged-tags">Apply</button>
-      </div>
-
-      <div class="table-tags">
-        <div class="table-top-bar">
-          <input type="checkbox" id="not-tagged-select-all"><label for="not-tagged-select-all">Select
-            All</label>
-          <p style="display:inline;">
-            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> | <span>Sort by
-              Results</span>
-          </p>
-        </div>
-        <div id="not-tagged-tags">
-          <!-- <div class="tag-in-focus">
-                            <input type="checkbox">
-                            <p class="tag">Word</p>
-                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
-                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
-                        </div> -->
-        </div>
-      </div>
-    </div>
-    </div>
-
-    <div class="tab-section" id="not-allowed-section">
-      <h2><span id="not-allowed-tags-count">20</span> tags</h2>
-      <h3>Selected - <span id="not-allowed-selectedCount">0</span></h2>
-        <div class="bulk-actions" id="bulk-actions-not-allowed">
-          <select>
-            <option value="" selected>Bulk Actions</option>
-            <option value="tagged-tags">Tagged</option>
-            <option value="not-tagged-tags">Not Tagged</option>
-            <option value="not-allowed-tags">Not Allowed</option>
-            <option value="redirected-tags">Redirect</option>
-            <option value="delete">Delete</option>
-          </select>
-          <button class="bulk-actions-button" id="bulk-actions-not-allowed-apply"
-            data-section="not-allowed-tags">Apply</button>
-        </div>
-
-        <div class="table-tags">
-          <div class="table-top-bar">
-            <input type="checkbox" id="not-allowed-select-all"><label for="not-allowed-select-all">Select
-              All</label>
-            <p style="display:inline;">
-              | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> |
-              <span>Sort by Results</span>
-            </p>
-          </div>
-          <div id="not-allowed-tags">
-            <!-- <div class="tag-in-focus">
-                            <input type="checkbox">
-                            <p class="tag">Word</p>
-                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
-                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
-                        </div> -->
-          </div>
-        </div>
-    </div>
-
-    <div class="tab-section" id="redirected-section">
-      <h2><span id="redirected-tags-count">20</span> tags</h2>
-      <h3>Selected - <span id="redirected-selectedCount">0</span></h3>
-      <div class="bulk-actions" id="bulk-actions-redirected">
-        <select>
-          <option value="" selected>Bulk Actions</option>
-          <option value="tagged-tags">Tagged</option>
-          <option value="not-tagged-tags">Not Tagged</option>
-          <option value="not-allowed-tags">Not Allowed</option>
-          <option value="redirected-tags">Redirect</option>
-          <option value="delete">Delete</option>
-        </select>
-        <button class="bulk-actions-button" data-section="redirected-tags"
-          id="bulk-actions-redirected-apply">Apply</button>
-      </div>
-
-      <div class="table-tags">
-        <div class="table-top-bar">
-          <input type="checkbox" id="redirected-select-all"><label for="redirected-select-all">Select
-            All</label>
-          <p style="display:inline;">
-            | <span>Sort Alphabetically</span> | <span>Sort by Requested</span> |
-            <span>Sort by Results</span>
-          </p>
-        </div>
-        <div id="redirected-tags">
-          <!-- <div class="tag-in-focus">
-                            <input type="checkbox">
-                            <p class="tag">Word</p>
-                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
-                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
-                        </div> -->
-        </div>
-      </div>
-    </div>
-  </main>
-  <!-- 
-  <div id="status" >
-    <p><span id="status-count">If you see this something is broken</span> keywords moved to "<span id="status-destination"></span>"</p>
-  </div> -->
-  <style>
     .status {
       position: fixed;
       width: 200px;
@@ -529,10 +332,234 @@
       text-align: center;
     }
   </style>
+</head>
 
+<body>
 
+  <h2>Missing Files for Targeted Keywords</h2>
+  <p>For a variety of reasons often having to do with creative uses or site or keyword sculpting by others, the
+    following is a list of keywords that your site seems to be known for but for which you don't have any content.
+  </p>
+  <p>Review the list below and validate (/tags/word) or or unvalidate them - return a 410 gone result.</p>
+  <main>
+    <div id="tab-selectors">
+      <input checked type="radio" name="tabs" id="pending-tab">
+      <label class="tab-labels" for="pending-tab">Pending</label>
 
+      <input type="radio" name="tabs" id="tagged-tab">
+      <label class="tab-labels" for="tagged-tab">Tagged</label>
 
+      <input type="radio" name="tabs" id="not-tagged-tab">
+      <label class="tab-labels" for="not-tagged-tab">Not Tagged</label>
+
+      <input type="radio" name="tabs" id="not-allowed-tab">
+      <label class="tab-labels" for="not-allowed-tab">Not Allowed</label>
+
+      <input type="radio" name="tabs" id="redirected-tab">
+      <label class="tab-labels" for="redirected-tab">Redirected</label>
+    </div>
+    <div class="tab-section" id="pending-section">
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <div>
+            <h2><span id="pending-tags-count">20</span> - Tags</h2> | <h2><span id="pending-selectedCount">0</span> -
+              Selected</h2>
+          </div>
+          <div class="bulk-actions" id="bulk-actions-pending">
+            <select>
+              <option value="" selected>Bulk Actions</option>
+              <option value="tagged-tags">Tagged</option>
+              <option value="not-tagged-tags">Not Tagged</option>
+              <option value="not-allowed-tags">Not Allowed</option>
+              <option value="redirected-tags">Redirect</option>
+              <option value="delete">Delete</option>
+            </select>
+            <button class="bulk-actions-button" data-section="pending-tags"
+              id="bulk-actions-pending-apply">Apply</button>
+          </div>
+
+          <div class="top-bar-actions">
+            <input type="checkbox" id="pending-select-all"><label for="pending-select-all">Select All</label>
+            <p style="display:inline;">
+              | <span data-section="pending-section">Sort Alphabetically</span> | <span
+                data-section="pending-section">Sort by Requested</span> | <span data-section="pending-section">Sort by
+                Results</span>
+            </p>
+          </div>
+        </div>
+        <div id="pending-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <input type="text" placeholder="Category or Link ID" class="redirected-input">
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-section" id="tagged-section">
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <div>
+            <h2><span id="tagged-tags-count">10</span> - Tags</h2>
+            <h2><span id="tagged-selectedCount">0</span> - Selected</h2>
+          </div>
+          <div class="bulk-actions" id="bulk-actions-tagged">
+            <select>
+              <option value="" selected>Bulk Actions</option>
+              <option value="tagged-tags">Tagged</option>
+              <option value="not-tagged-tags">Not Tagged</option>
+              <option value="not-allowed-tags">Not Allowed</option>
+              <option value="redirected-tags">Redirect</option>
+              <option value="delete">Delete</option>
+            </select>
+            <button class="bulk-actions-button" id="bulk-actions-tagged-apply" data-section="tagged-tags">Apply</button>
+          </div>
+          <div class="top-bar-actions">
+            <input type="checkbox" id="tagged-select-all"><label for="tagged-select-all">Select
+              All</label>
+            <p style="display:inline;">
+              | <span data-section="tagged-section">Sort Alphabetically</span> | <span
+                data-section="tagged-section">Sort by Requested</span> | <span data-section="tagged-section">Sort by
+                Results</span>
+            </p>
+          </div>
+        </div>
+        <div id="tagged-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-section" id="not-tagged-section">
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <div>
+            <h2><span id="not-tagged-tags-count">0</span> - Tags</h2>
+            <h2><span id="not-tagged-selectedCount">0</span> - Selected</h2>
+          </div>
+          <div class="bulk-actions" id="bulk-actions-not-tagged">
+            <select>
+              <option value="" selected>Bulk Actions</option>
+              <option value="tagged-tags">Tagged</option>
+              <option value="not-tagged-tags">Not Tagged</option>
+              <option value="not-allowed-tags">Not Allowed</option>
+              <option value="redirected-tags">Redirect</option>
+              <option value="delete">Delete</option>
+            </select>
+            <button class="bulk-actions-button" id="bulk-actions-not-tagged-apply"
+              data-section="not-tagged-tags">Apply</button>
+          </div>
+          <div class="top-bar-actions">
+            <input type="checkbox" id="not-tagged-select-all"><label for="not-tagged-select-all">Select
+              All</label>
+            <p style="display:inline;">
+              | <span data-section="not-tagged-section">Sort Alphabetically</span> | <span
+                data-section="not-tagged-section">Sort by Requested</span> | <span
+                data-section="not-tagged-section">Sort by
+                Results</span>
+            </p>
+          </div>
+        </div>
+        <div id="not-tagged-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-section" id="not-allowed-section">
+
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <div>
+            <h2><span id="not-allowed-tags-count">20</span> - Tags</h2>
+            <h2><span id="not-allowed-selectedCount">0</span> - Selected</h2>
+          </div>
+          <div class="bulk-actions" id="bulk-actions-not-allowed">
+            <select>
+              <option value="" selected>Bulk Actions</option>
+              <option value="tagged-tags">Tagged</option>
+              <option value="not-tagged-tags">Not Tagged</option>
+              <option value="not-allowed-tags">Not Allowed</option>
+              <option value="redirected-tags">Redirect</option>
+              <option value="delete">Delete</option>
+            </select>
+            <button class="bulk-actions-button" id="bulk-actions-not-allowed-apply"
+              data-section="not-allowed-tags">Apply</button>
+          </div>
+          <div class="top-bar-actions">
+            <input type="checkbox" id="not-allowed-select-all"><label for="not-allowed-select-all">Select
+              All</label>
+            <p style="display:inline;">
+              | <span data-section="not-allowed-section">Sort Alphabetically</span> | <span
+                data-section="not-allowed-section">Sort by Requested</span> |
+              <span data-section="not-allowed-section">Sort by Results</span>
+            </p>
+          </div>
+        </div>
+        <div id="not-allowed-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-section" id="redirected-section">
+      <div class="table-tags">
+        <div class="table-top-bar">
+          <div>
+            <h2><span id="redirected-tags-count">20</span> - Tags</h2>
+            <h2><span id="redirected-selectedCount">0</span> - Selected</h2>
+          </div>
+          <div class="bulk-actions" id="bulk-actions-redirected">
+            <select>
+              <option value="" selected>Bulk Actions</option>
+              <option value="tagged-tags">Tagged</option>
+              <option value="not-tagged-tags">Not Tagged</option>
+              <option value="not-allowed-tags">Not Allowed</option>
+              <option value="redirected-tags">Redirect</option>
+              <option value="delete">Delete</option>
+            </select>
+            <button class="bulk-actions-button" data-section="redirected-tags"
+              id="bulk-actions-redirected-apply">Apply</button>
+          </div>
+          <div class="top-bar-actions">
+            <input type="checkbox" id="redirected-select-all"><label for="redirected-select-all">Select
+              All</label>
+            <p style="display:inline;">
+              | <span data-section="redirected-section">Sort Alphabetically</span> | <span
+                data-section="redirected-section">Sort by Requested</span> |
+              <span data-section="redirected-section">Sort by Results</span>
+            </p>
+          </div>
+        </div>
+        <div id="redirected-tags">
+          <!-- <div class="tag-in-focus">
+                            <input type="checkbox">
+                            <p class="tag">Word</p>
+                            <p class="request-results" title="# of Request / # of Results"><span>4 / 3</span></p>
+                            <p class="actions"><span>Tagged</span> | <span>Not Tagged</span> | <span>Not Allowed</span> | <span>Redirect</span> | <span>Delete</span></p>
+                        </div> -->
+        </div>
+      </div>
+    </div>
+  </main>
   <!-- Dialog for tag removal -->
   <dialog id="dialog-remove">
     <h2>Confirm Deletion </h2>
@@ -548,7 +575,8 @@
     <p id="redirect-dialog-tags"></p>
     <p>Ensure you understand the consequences of redirecting content</p>
 
-    <input  id="dialog-redirect-input" type="text" autofocus placeholder="Category or Link ID" style="width: 100%;margin-block: 5px;">
+    <input id="dialog-redirect-input" type="text" autofocus placeholder="Category or Link ID"
+      style="width: 100%;margin-block: 5px;">
     <div style="display:flex;gap:5px;justify-content:center;width:100%;">
       <button id="dialog-redirect-confirm" style="width:30%;">Redirect</button>
       <button id="" style="width:30%;">Cancel</button>

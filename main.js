@@ -100,20 +100,21 @@ function makeTagsSelectable() {
             evnt.currentTarget.classList.add("selected");
         }
         // Update the selected count at the top of the section
+        console.log(tag.parentElement.id)
         updatedSelectedCount(tag.parentElement.id);
     }));
 }
 
-selectAllEvent(document.querySelectorAll(".table-top-bar input[type=\"checkbox\"]"));
+selectAllEvent(document.querySelectorAll(".top-bar-actions input[type=\"checkbox\"]"));
 // Function used to make select all button select all
 function selectAllEvent(checkboxes) {
     checkboxes.forEach(checkbox => {
         // Add event listener to each checkbox
         checkbox.addEventListener("click", (evnt) => {
             // Get the section of the checkbox
-            const parentElement = evnt.target.parentElement.parentElement;
+            const parentElement = evnt.target.parentElement.parentElement.parentElement;
             // Get the tags within the container
-            const tags = parentElement.querySelectorAll(".tag-in-focus");
+            const tags = parentElement.querySelectorAll(".tag-in-focus, .tag-in-focus-redirected");
 
             // Get a count of how many tags have been selected already
             let selectedTagsCount = 0
@@ -137,7 +138,8 @@ function selectAllEvent(checkboxes) {
                 })
             }
             // Update the selection count
-            updatedSelectedCount(tag.parentElement.parentElement.parentElement);
+            // console.log(tags[0].parentElement.parentElement.parentElement);
+            updatedSelectedCount(tags[0].parentElement.id);
 
         });
     });
@@ -147,9 +149,10 @@ function selectAllEvent(checkboxes) {
 // Function used to update the element that shows how many elements have been selected
 // Table should be the id of the container holding the tags
 function updatedSelectedCount(table) {
-    const tableElement = document.querySelector(`#${table.replace("tags", "section")}`);
-    // console.log(tableElement.querySelector("h3"));
-    tableElement.querySelector("h3 span").innerHTML = tableElement.querySelectorAll(".selected").length;
+    const tableElementID = table.replace("tags", "section");
+    const selectedCountElementID = table.replace("tags", "selectedCount");
+    const tableElement = document.querySelector(`#${tableElementID}`);
+    tableElement.querySelector(`#${selectedCountElementID}`).innerHTML = tableElement.querySelectorAll(".selected").length;
 }
 // Function used to update the count in a table after an event
 // Table should be the id of the container holding the tags
@@ -157,14 +160,14 @@ function updateCountInSection(table) {
     document.querySelector(`#${table}-count`).innerHTML = document.querySelector(`#${table}`).children.length;
 }
 // Add event listeners to the sort by results tag
-document.querySelectorAll(".table-top-bar span:nth-child(3)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsByResults(evnt.target.parentElement.parentElement.parentElement.parentElement.id); }));
+document.querySelectorAll(".top-bar-actions span:nth-child(3)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsByResults(evnt.target.dataset.section); }));
 // Function used to sort tags by results
 function sortTagsByResults(tableID) {
     const table = document.querySelector(`#${tableID}`);
-    const sortingActionButton = table.querySelector(".table-top-bar span:nth-child(3)")
+    const sortingActionButton = table.querySelector(".top-bar-actions span:nth-child(3)")
 
     // Get associated tags and convert HTML object to Array to be sortable
-    const tags = Array.from(table.querySelectorAll(".tag-in-focus"));
+    const tags = Array.from(table.querySelectorAll(".tag-in-focus, .tag-in-focus-redirected"));
     // Remove ^ or V from other options
     removeArrowFromOtherSortingAction();
 
@@ -194,14 +197,15 @@ function sortTagsByResults(tableID) {
 
 
 // Add event listeners to the sort by requests tag
-document.querySelectorAll(".table-top-bar span:nth-child(2)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsByRequest(evnt.target.parentElement.parentElement.parentElement.parentElement.id) }));
+document.querySelectorAll(".top-bar-actions span:nth-child(2)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsByRequest(evnt.target.dataset.section) }));
 // Function used to sort tags by requested option
 function sortTagsByRequest(tableID) {
     // Select all button associated with sort by requested
     const table = document.querySelector(`#${tableID}`);
-    const sortingActionButton = table.querySelector(".table-top-bar span:nth-child(2)")
+    const sortingActionButton = table.querySelector(".top-bar-actions span:nth-child(2)")
     // Get all the tags in the same div as the action button and convert into an array to be sortable
-    const tags = Array.from(table.querySelectorAll(".tag-in-focus"));
+    const tags = Array.from(table.querySelectorAll(".tag-in-focus, .tag-in-focus-redirected"));
+    console.log(tags);
     // Remove ^ or V from other options
     removeArrowFromOtherSortingAction();
     // SOrt descending
@@ -229,12 +233,12 @@ function sortTagsByRequest(tableID) {
     tags.forEach(tag => tag.parentElement.appendChild(tag));
 }
 // Add event listener to sort tags alphabetically
-document.querySelectorAll(".table-top-bar span:nth-child(1)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsAlphabetically(evnt.target.parentElement.parentElement.parentElement.parentElement.id) }));
+document.querySelectorAll(".top-bar-actions span:nth-child(1)").forEach(element => element.addEventListener("click", (evnt) => { sortTagsAlphabetically(evnt.target.dataset.section) }));
 // Function used to sort tags by alphabetically option
-function sortTagsAlphabetically(tableID, movingTag=false) {
+function sortTagsAlphabetically(tableID, movingTag = false) {
     // Select table and the button used to sort
     const table = document.querySelector(`#${tableID}`);
-    const sortingActionButton = table.querySelector(".table-top-bar span:nth-child(1)")
+    const sortingActionButton = table.querySelector(".top-bar-actions span:nth-child(1)")
     console.log("Sort by Alphabetical");
 
     // Get associated tags and convert to array
@@ -250,7 +254,7 @@ function sortTagsAlphabetically(tableID, movingTag=false) {
             // console.log(test);
             return valueA.localeCompare(valueB);
         })
-    // SOrt descending
+        // SOrt descending
     } else if (sortingActionButton.dataset.sortedAlphaAscending == "true") {
         tags.sort((a, b) => {
             const valueA = a.querySelector(".tag").innerHTML;
@@ -276,7 +280,7 @@ function sortTagsAlphabetically(tableID, movingTag=false) {
 // Function used to remove little arrow on other sorting actions when other action selected
 function removeArrowFromOtherSortingAction() {
     // Select all sort action span tags
-    document.querySelectorAll(".table-top-bar span").forEach(element => {
+    document.querySelectorAll(".top-bar-actions span").forEach(element => {
         // See if the span has an arrow
         if (element.innerHTML[0] == "V" || element.innerHTML[0] == "^") {
             // If its not visible, ignore
@@ -314,12 +318,12 @@ function bulkActionFunctionality() {
     const buttons = document.querySelectorAll(".bulk-actions-button");
     buttons.forEach(button => {
         button.addEventListener("click", (evnt) => {
-            const section = button.parentElement.parentElement;
-            const tags = section.querySelectorAll(".selected")
+            const section = button.dataset.section;
+            const tags = document.querySelector(`#${section}`).querySelectorAll(".selected")
             let data = {
                 "destination": evnt.currentTarget.previousElementSibling.value,
                 "tags": tags,
-                "currentParent": tags[0].parentElement.id
+                "currentParent": section
             }
             performAction(data);
         });
@@ -354,14 +358,18 @@ function performAction(data) {
             }
             // Now append the tag to the destination
             document.querySelector(`#${data.destination}`).appendChild(tag);
-            // Update count of the destination element
-            updateCountInSection(data.destination);
-            // Update count of source element
-            updateCountInSection(data.currentParent);
-            // ALso update the selected count, if the tag was selected
-            updatedSelectedCount(data.currentParent);
-            sortTagsAlphabetically(data.destination.replace("tags", "section"), true);
         });
+        // Update count of the destination element
+        updateCountInSection(data.destination);
+        // Update count of source element
+        updateCountInSection(data.currentParent);
+        // ALso update the selected count, if the tag was selected
+        updatedSelectedCount(data.currentParent);
+        // If the select all checkbox is check, remove check status
+        if (document.querySelector(`#${data.currentParent.replace("tags", "section")}`).querySelector(".top-bar-actions input[type=\"checkbox\"]").checked) {
+            document.querySelector(`#${data.currentParent.replace("tags", "section")}`).querySelector(".top-bar-actions input[type=\"checkbox\"]").checked = false;
+        }
+        sortTagsAlphabetically(data.destination.replace("tags", "section"), true);
         showStatusThenHide(data.tags.length, data.destination.replace("-tags", "").replaceAll("-", " ").toUpperCase());
     } else if (data.destination == "redirected-tags") {
         const dialogBox = document.querySelector("#dialog-redirection");
@@ -442,28 +450,34 @@ function addRedirectDialogBoxActions() {
                 // Update count of the destination element
                 updateCountInSection("redirected-tags");
 
+
+
+                // If the select all checkbox is check, remove check status
+                if (document.querySelector(`#${sourceParent.replace("tags", "section")}`).querySelector(".top-bar-actions input[type=\"checkbox\"]").checked) {
+                    document.querySelector(`#${sourceParent.replace("tags", "section")}`).querySelector(".top-bar-actions input[type=\"checkbox\"]").checked = false;
+                }
             }
-            // Remove text user inputs from the textbox
-            dialogBox.querySelector("input[type=\"text\"]").value = "";
             // Remove the pending class
             tag.classList.remove("redirect-pending");
             // Inform user of move
             showStatusThenHide(tags.length, "Redirected");
         });
         sortTagsAlphabetically("redirected-section", true);
+        // Remove text user inputs from the textbox
+        dialogBox.querySelector("input[type=\"text\"]").value = "";
         dialogBox.close();
     });
     // Add close functionality and deselect tags (remove the pending class)
     dialogBox.querySelector("button:last-of-type").addEventListener("click", (evnt) => {
+        // Remove text user inputs from the textbox
+        dialogBox.querySelector("input[type=\"text\"]").value = "";
+        // Close dialog box
         dialogBox.close();
-
         // Remove the class from the tag
         let tags = document.querySelectorAll(".redirect-pending");
         tags.forEach(tag => {
             if (tag.checkVisibility()) {
                 tag.classList.remove("redirect-pending");
-                // tag.classList.remove("selected");
-                // tag.querySelector("input[type=\"checkbox\"]").checked = false;
             }
         })
     })
@@ -487,8 +501,15 @@ function addDeleteDialogBoxActions() {
             tag.remove()
             updateCountInSection(parent);
             updatedSelectedCount(parent);
+
+            // If the select all checkbox is check, remove check status
+            if (document.querySelector(`#${parent.replace("tags", "section")}`).querySelector(".top-bar-actions input[type=\"checkbox\"]").checked) {
+                document.querySelector(`#${parent.replace("tags", "section")}`).querySelector(".top-bar-actions input[type=\"checkbox\"]").checked = false;
+            }
         });
         dialogBox.close();
+
+        // document.querySelectorAll(".top-bar-actions input[type=\"checkbox\"]").checked = false;
         showStatusThenHide(tags.length, "Delete");
 
     });
